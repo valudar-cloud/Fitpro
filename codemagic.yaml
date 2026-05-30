@@ -10,8 +10,8 @@ workflows:
       - name: Créer le fichier .env
         script: |
           cat > .env << EOF
-          SUPABASE_URL=https://REMPLACE_PAR_TON_URL.supabase.co
-          SUPABASE_ANON_KEY=REMPLACE_PAR_TA_CLE_ANON
+          SUPABASE_URL=https://xudbldznqtxkxhqhpgeu.supabase.co
+          SUPABASE_ANON_KEY=sb_publishable_BJpsSkY4If6FxVQ2KCwvIQ_WiV91rHp
           REVENUECAT_IOS_KEY=placeholder
           REVENUECAT_ANDROID_KEY=placeholder
           STRIPE_PUBLISHABLE_KEY=placeholder
@@ -45,7 +45,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - ton.email@example.com
+          - valudar@gmail.com
         notify:
           success: true
           failure: true
