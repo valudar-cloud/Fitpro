@@ -1,0 +1,51 @@
+workflows:
+  android-debug:
+    name: FitPro Android APK
+    max_build_duration: 30
+    environment:
+      flutter: 3.19.6
+      java: 17
+
+    scripts:
+      - name: Créer le fichier .env
+        script: |
+          cat > .env << EOF
+          SUPABASE_URL=https://REMPLACE_PAR_TON_URL.supabase.co
+          SUPABASE_ANON_KEY=REMPLACE_PAR_TA_CLE_ANON
+          REVENUECAT_IOS_KEY=placeholder
+          REVENUECAT_ANDROID_KEY=placeholder
+          STRIPE_PUBLISHABLE_KEY=placeholder
+          APP_ENV=development
+          PREMIUM_MONTHLY_ID=fitpro_premium_monthly
+          PREMIUM_ANNUAL_ID=fitpro_premium_annual
+          EOF
+
+      - name: Créer les dossiers assets manquants
+        script: |
+          mkdir -p assets/images
+          mkdir -p assets/gifs
+          mkdir -p assets/lottie
+          mkdir -p assets/fonts
+          touch assets/images/.gitkeep
+          touch assets/gifs/.gitkeep
+          touch assets/lottie/.gitkeep
+
+      - name: Installer les dépendances
+        script: flutter pub get
+
+      - name: Builder l'APK debug
+        script: |
+          flutter build apk \
+            --debug \
+            --no-tree-shake-icons
+
+    artifacts:
+      - build/app/outputs/flutter-apk/app-debug.apk
+
+    publishing:
+      email:
+        recipients:
+          - ton.email@example.com
+        notify:
+          success: true
+          failure: true
