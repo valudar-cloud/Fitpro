@@ -42,7 +42,7 @@ final activeQuestsProvider = FutureProvider.autoDispose<List<Quest>>((ref) async
       .from('user_quests')
       .select()
       .eq('user_id', userId)
-      .in_('status', ['available', 'in_progress', 'completed']);
+      .inFilter('status', ['available', 'in_progress', 'completed']);
 
   // Construire la map de progression
   final progressMap = <String, Map<String, dynamic>>{};
