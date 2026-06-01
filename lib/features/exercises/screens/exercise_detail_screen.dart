@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gif_view/gif_view.dart';
+import 'package:go_router/go_router.dart';
 
 import '../data/exercises_data.dart';
 import '../models/exercise_model.dart';
@@ -8,6 +9,7 @@ import '../../rpg/providers/rpg_provider.dart';
 import '../screens/exercises_screen.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/localization/app_strings.dart';
+import '../../../core/constants/app_constants.dart';
 
 class ExerciseDetailScreen extends ConsumerWidget {
   final String exerciseId;
@@ -550,8 +552,4 @@ class _PremiumCTA extends StatelessWidget {
       ),
     );
   }
-}
-
-extension on BuildContext {
-  void push(String route) => Navigator.of(this).pushNamed(route);
 }
