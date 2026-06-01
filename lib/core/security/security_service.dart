@@ -112,7 +112,7 @@ class SecurityService {
   static String sanitizeInput(String input) {
     return input
         .trim()
-        .replaceAll(RegExp(r'[<>"\']'), '') // Anti XSS
+        .replaceAll(RegExp(r'[<>]'), '') // Anti XSS
         .substring(0, input.length.clamp(0, 500));
   }
 
