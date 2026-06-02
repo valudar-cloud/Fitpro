@@ -138,7 +138,7 @@ class AuthNotifier extends AsyncNotifier<void> {
     if (message.contains('User already registered')) return 'Cet email est déjà utilisé';
     if (message.contains('Password should be')) return 'Mot de passe trop court';
     if (message.contains('rate limit')) return 'Trop de tentatives, réessaie plus tard';
-    return 'Erreur de connexion';
+    return 'Erreur Supabase: $message';
   }
 }
 
