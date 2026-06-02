@@ -40,8 +40,55 @@ workflows:
             -o assets/fonts/Poppins-SemiBold.ttf
           curl -L "https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-Bold.ttf" \
             -o assets/fonts/Poppins-Bold.ttf
-          echo "Polices téléchargées :"
-          ls -lh assets/fonts/
+
+      - name: Générer les icônes de l'application
+        script: |
+          python3 << 'PYEOF'
+          import struct, zlib, os
+
+          def make_png(size, r, g, b):
+              """Génère un PNG unicolore valide sans dépendances externes"""
+              def chunk(name, data):
+                  crc = zlib.crc32(name + data) & 0xffffffff
+                  return struct.pack('>I', len(data)) + name + data + struct.pack('>I', crc)
+
+              # Pixels : chaque ligne commence par filtre \x00, puis RGB pour chaque pixel
+              raw = b''
+              for _ in range(size):
+                  raw += b'\x00' + bytes([r, g, b] * size)
+
+              ihdr_data = struct.pack('>IIBBBBB', size, size, 8, 2, 0, 0, 0)
+              png  = b'\x89PNG\r\n\x1a\n'
+              png += chunk(b'IHDR', ihdr_data)
+              png += chunk(b'IDAT', zlib.compress(raw, 9))
+              png += chunk(b'IEND', b'')
+              return png
+
+          # Orange FitPro : #FF6B35
+          R, G, B = 255, 107, 53
+
+          configs = [
+              ('mipmap-mdpi',    48),
+              ('mipmap-hdpi',    72),
+              ('mipmap-xhdpi',   96),
+              ('mipmap-xxhdpi',  144),
+              ('mipmap-xxxhdpi', 192),
+          ]
+
+          base = 'android/app/src/main/res'
+          for folder, size in configs:
+              path = os.path.join(base, folder)
+              os.makedirs(path, exist_ok=True)
+              # ic_launcher
+              with open(os.path.join(path, 'ic_launcher.png'), 'wb') as f:
+                  f.write(make_png(size, R, G, B))
+              # ic_launcher_round
+              with open(os.path.join(path, 'ic_launcher_round.png'), 'wb') as f:
+                  f.write(make_png(size, R, G, B))
+              print(f'✅ {folder}: {size}x{size}px')
+
+          print('Icônes générées avec succès !')
+          PYEOF
 
       - name: Installer les dépendances
         script: flutter pub get
