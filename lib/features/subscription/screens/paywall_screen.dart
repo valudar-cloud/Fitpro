@@ -401,7 +401,7 @@ class _PlanCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: const Text(
-                            'Économise 50%',
+                            'Économise 17%',
                             style: TextStyle(
                                 color: AppTheme.secondary,
                                 fontSize: 10,
@@ -422,7 +422,7 @@ class _PlanCard extends StatelessWidget {
                   ),
                   if (isAnnual)
                     Text(
-                      '= ${(package.storeProduct.price / 12).toStringAsFixed(2)}€ / mois',
+                      '= ${(package.storeProduct.price > 0 ? package.storeProduct.price / 12 : 49.99 / 12).toStringAsFixed(2)}€ / mois',
                       style: const TextStyle(
                           color: Colors.white38, fontSize: 11),
                     ),
