@@ -16,30 +16,22 @@ workflows:
           REVENUECAT_ANDROID_KEY=placeholder
           STRIPE_PUBLISHABLE_KEY=placeholder
           APP_ENV=development
-          PREMIUM_MONTHLY_ID=fitpro_premium_monthly
-          PREMIUM_ANNUAL_ID=fitpro_premium_annual
+          PREMIUM_MONTHLY_ID=fitpro_499_monthly
+          PREMIUM_ANNUAL_ID=fitpro_4999_annual
           ENVEOF
 
       - name: Créer les dossiers assets
         script: |
-          mkdir -p assets/images
-          mkdir -p assets/gifs
-          mkdir -p assets/lottie
-          mkdir -p assets/fonts
-          touch assets/images/.gitkeep
-          touch assets/gifs/.gitkeep
-          touch assets/lottie/.gitkeep
+          mkdir -p assets/images assets/gifs assets/lottie assets/fonts
+          touch assets/images/.gitkeep assets/gifs/.gitkeep assets/lottie/.gitkeep
 
       - name: Télécharger les polices Poppins
         script: |
-          curl -L "https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-Regular.ttf" \
-            -o assets/fonts/Poppins-Regular.ttf
-          curl -L "https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-Medium.ttf" \
-            -o assets/fonts/Poppins-Medium.ttf
-          curl -L "https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-SemiBold.ttf" \
-            -o assets/fonts/Poppins-SemiBold.ttf
-          curl -L "https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-Bold.ttf" \
-            -o assets/fonts/Poppins-Bold.ttf
+          curl -L "https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-Regular.ttf" -o assets/fonts/Poppins-Regular.ttf
+          curl -L "https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-Medium.ttf" -o assets/fonts/Poppins-Medium.ttf
+          curl -L "https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-SemiBold.ttf" -o assets/fonts/Poppins-SemiBold.ttf
+          curl -L "https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-Bold.ttf" -o assets/fonts/Poppins-Bold.ttf
+          echo "Polices : $(ls -lh assets/fonts/)"
 
       - name: Générer les icônes de l'application
         script: |
@@ -47,47 +39,31 @@ workflows:
           import struct, zlib, os
 
           def make_png(size, r, g, b):
-              """Génère un PNG unicolore valide sans dépendances externes"""
-              def chunk(name, data):
-                  crc = zlib.crc32(name + data) & 0xffffffff
-                  return struct.pack('>I', len(data)) + name + data + struct.pack('>I', crc)
-
-              # Pixels : chaque ligne commence par filtre \x00, puis RGB pour chaque pixel
-              raw = b''
-              for _ in range(size):
-                  raw += b'\x00' + bytes([r, g, b] * size)
-
-              ihdr_data = struct.pack('>IIBBBBB', size, size, 8, 2, 0, 0, 0)
-              png  = b'\x89PNG\r\n\x1a\n'
-              png += chunk(b'IHDR', ihdr_data)
-              png += chunk(b'IDAT', zlib.compress(raw, 9))
-              png += chunk(b'IEND', b'')
-              return png
-
-          # Orange FitPro : #FF6B35
-          R, G, B = 255, 107, 53
+            def chunk(name, data):
+              crc = zlib.crc32(name + data) & 0xffffffff
+              return struct.pack('>I', len(data)) + name + data + struct.pack('>I', crc)
+            raw = b''
+            for _ in range(size):
+              raw += b'\x00' + bytes([r, g, b] * size)
+            ihdr = struct.pack('>IIBBBBB', size, size, 8, 2, 0, 0, 0)
+            png  = b'\x89PNG\r\n\x1a\n'
+            png += chunk(b'IHDR', ihdr)
+            png += chunk(b'IDAT', zlib.compress(raw, 9))
+            png += chunk(b'IEND', b'')
+            return png
 
           configs = [
-              ('mipmap-mdpi',    48),
-              ('mipmap-hdpi',    72),
-              ('mipmap-xhdpi',   96),
-              ('mipmap-xxhdpi',  144),
-              ('mipmap-xxxhdpi', 192),
+            ('mipmap-mdpi', 48), ('mipmap-hdpi', 72),
+            ('mipmap-xhdpi', 96), ('mipmap-xxhdpi', 144), ('mipmap-xxxhdpi', 192),
           ]
-
           base = 'android/app/src/main/res'
           for folder, size in configs:
-              path = os.path.join(base, folder)
-              os.makedirs(path, exist_ok=True)
-              # ic_launcher
-              with open(os.path.join(path, 'ic_launcher.png'), 'wb') as f:
-                  f.write(make_png(size, R, G, B))
-              # ic_launcher_round
-              with open(os.path.join(path, 'ic_launcher_round.png'), 'wb') as f:
-                  f.write(make_png(size, R, G, B))
-              print(f'✅ {folder}: {size}x{size}px')
-
-          print('Icônes générées avec succès !')
+            path = os.path.join(base, folder)
+            os.makedirs(path, exist_ok=True)
+            data = make_png(size, 255, 107, 53)
+            open(os.path.join(path, 'ic_launcher.png'), 'wb').write(data)
+            open(os.path.join(path, 'ic_launcher_round.png'), 'wb').write(data)
+            print(f'✅ {folder} {size}x{size}px')
           PYEOF
 
       - name: Installer les dépendances
